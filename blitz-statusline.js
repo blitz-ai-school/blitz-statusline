@@ -46,7 +46,8 @@ const clean = s => (typeof s === 'string' ? s : '').replace(/[\x00-\x1f\x7f]/g, 
 function main(raw) {
   const obj = v => (v && typeof v === 'object') ? v : {};
   let d;
-  try { d = obj(JSON.parse(raw)); } catch { process.stdout.write('statusline: waiting for data\n'); return; }
+  // 頭の BOM（Windows の PowerShell で渡すと付くことがある文字コードの印）は読み飛ばす
+  try { d = obj(JSON.parse(raw.replace(/^\uFEFF/, ''))); } catch { process.stdout.write('statusline: waiting for data\n'); return; }
   const ctx = obj(d.context_window), rl = obj(d.rate_limits);
   const five = obj(rl.five_hour), week = obj(rl.seven_day);
   const model = clean(obj(d.model).display_name);
